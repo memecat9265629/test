@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Custom Web Page</title>
     <style>
+        @font-face {
+            font-family: 'FredokaOne';
+            src: url('FredokaOne.tff') format('truetype');
+        }
+
         body {
-            font-family: 'YourCustomFontName', sans-serif; /* Replace 'YourCustomFontName' with the actual font name from DaFont */
+            font-family: 'FredokaOne', sans-serif; /* Use the font in your body */
             text-align: center;
             background-color: #f0f0f0;
             margin: 0;
@@ -51,8 +56,8 @@
         // Set an interval to update the time every second
         setInterval(updateTime, 1000);
 
-        // Simulate an internet speed (replace ?? with actual value if known)
-        document.getElementById('internet-speed').textContent = '??'; // Replace with actual value if known
+        // Set the internet speed dynamically
+        document.getElementById('internet-speed').textContent = 'YourActualSpeed'; // Replace with your real Mbps value
     </script>
 
 </body>
