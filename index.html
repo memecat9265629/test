@@ -3,62 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Web Page</title>
+    <title>Current Time and Font Example</title>
+    
+    <!-- Linking the font from DaFont -->
+    <link href="https://example.com/path-to-font.woff2" rel="stylesheet" type="text/css">
+    
     <style>
-        @font-face {
-            font-family: 'FredokaOne';
-            src: url('FredokaOne.tff') format('truetype');
-        }
-
         body {
-            font-family: 'FredokaOne', sans-serif; /* Use the font in your body */
+            font-family: 'Cute_Cat', sans-serif; /* Replace 'YourChosenFont' with the actual font name */
             text-align: center;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
+            margin-top: 50px;
         }
-        .card {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: inline-block;
-            margin-top: 20px;
-        }
-        .time {
+        
+        .current-time {
             font-size: 24px;
-        }
-        .speed {
-            font-size: 18px;
+            color: #333;
         }
     </style>
 </head>
 <body>
-
-    <div class="card">
-        <h1>Current Time:</h1>
-        <p class="time" id="current-time"></p>
-        <p class="speed">Your Internet Speed: Mbps: <span id="internet-speed">??</span></p>
-    </div>
-
+    <div class="current-time" id="time"></div>
+    
     <script>
-        // Display the current time
         function updateTime() {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const timeElement = document.getElementById('time');
+            const currentTime = new Date();
+            const hours = currentTime.getHours();
+            const minutes = currentTime.getMinutes().toString().padStart(2, '0');
+            const seconds = currentTime.getSeconds().toString().padStart(2, '0');
             const amPm = hours >= 12 ? 'PM' : 'AM';
-            const formattedTime = `${hours}:${minutes}:${seconds} ${amPm}`;
-            document.getElementById('current-time').textContent = formattedTime;
+            
+            const formattedTime = `${hours % 12 || 12}:${minutes}:${seconds} ${amPm}`;
+            timeElement.textContent = formattedTime;
         }
-
-        // Set an interval to update the time every second
-        setInterval(updateTime, 1000);
-
-        // Set the internet speed dynamically
-        document.getElementById('internet-speed').textContent = 'YourActualSpeed'; // Replace with your real Mbps value
+        
+        setInterval(updateTime, 1000); // Update every second
+        updateTime(); // Call initially to set the time right away
     </script>
-
 </body>
 </html>
