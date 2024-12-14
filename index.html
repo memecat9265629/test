@@ -3,151 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile & Menu Example</title>
+    <title>App List</title>
     <style>
-        /* CSS */
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
         }
-
-        .profile-container {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .profile-image {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-        }
-
-        .profile-title {
-            font-size: 24px;
-            margin-top: 10px;
-        }
-
-        .hamburger-menu {
+        .app-card {
+            border: 1px solid #ddd;
+            padding: 16px;
+            margin: 16px;
+            border-radius: 8px;
             display: flex;
-            justify-content: center;
-            cursor: pointer;
-            margin: 20px 0;
+            align-items: center;
         }
-
-        .hamburger-line {
-            width: 30px;
-            height: 4px;
-            background-color: #333;
-            margin: 4px 0;
+        .app-image {
+            width: 100px;
+            height: 100px;
+            margin-right: 16px;
         }
-
-        .sidebar-menu {
-            display: none; /* Hidden by default */
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 200px;
-            height: 100%;
-            background-color: #222;
+        .app-details {
+            flex-grow: 1;
+        }
+        .app-name {
+            font-weight: bold;
+            margin: 8px 0;
+        }
+        .app-version {
+            color: gray;
+            margin-bottom: 8px;
+        }
+        .app-button {
+            padding: 8px 16px;
+            background-color: #007BFF;
             color: white;
-            padding-top: 60px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }
-
-        .sidebar-menu ul {
-            list-style-type: none;
-            padding: 0;
-        }
-
-        .sidebar-menu ul li {
-            padding: 15px;
-        }
-
-        .sidebar-menu ul li a {
+        .app-button a {
             color: white;
             text-decoration: none;
-            display: block;
         }
-
-        .sidebar-menu ul li a.active, .sidebar-menu ul li a:hover {
-            background-color: #444;
+        .search-bar {
+            margin: 16px;
         }
-
-        .app-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .app-item {
-            text-align: center;
-            margin: 15px;
-        }
-
-        .app-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-        }
-
-        .app-name {
-            margin-top: 10px;
-            font-size: 18px;
+        .clock {
+            margin-top: 16px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Profile Image and Title Section -->
-    <div class="profile-container">
-        <img src="profile-image.jpg" alt="Profile Image" class="profile-image">
-        <h1 class="profile-title">Your Title Name Here</h1>
+    <div class="search-bar">
+        <input type="text" id="search" placeholder="Search apps...">
     </div>
 
-    <!-- Hamburger Menu Icon -->
-    <div class="hamburger-menu">
-        <div class="hamburger-line"></div>
-        <div class="hamburger-line"></div>
-        <div class="hamburger-line"></div>
-    </div>
-
-    <!-- Sidebar Menu -->
-    <nav class="sidebar-menu">
-        <ul>
-            <li><a href="#" class="active">Main Tab</a></li>
-            <li><a href="#">App List Tab</a></li>
-        </ul>
-    </nav>
-
-    <!-- App List Section -->
     <div class="app-list">
-        <div class="app-item">
-            <img src="app-icon1.png" alt="App 1 Image" class="app-icon">
-            <h3 class="app-name">App 1 Name</h3>
+        <!-- App Card Example -->
+        <div class="app-card">
+            <img src="app-image.png" alt="App Image" class="app-image">
+            <div class="app-details">
+                <div class="app-name">App Name</div>
+                <div class="app-version">Version: 1.0.0</div>
+                <button class="app-button"><a href="app-link.html">Visit App</a></button>
+            </div>
         </div>
-        <div class="app-item">
-            <img src="app-icon2.png" alt="App 2 Image" class="app-icon">
-            <h3 class="app-name">App 2 Name</h3>
-        </div>
-        <!-- Add more app items as needed -->
+    </div>
+
+    <!-- Clock -->
+    <div class="clock">
+        <p>Current Time: <span id="clock-time">??:??:??</span> PM</p>
     </div>
 
     <script>
-        // JavaScript
-        const hamburgerMenu = document.querySelector('.hamburger-menu');
-        const sidebarMenu = document.querySelector('.sidebar-menu');
+        function updateClock() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const amPm = hours >= 12 ? 'PM' : 'AM';
+            
+            document.getElementById('clock-time').textContent = `${hours}:${minutes}:${seconds} ${amPm}`;
+        }
 
-        hamburgerMenu.addEventListener('click', () => {
-            sidebarMenu.classList.toggle('active');
-        });
-
-        // Close sidebar menu when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!hamburgerMenu.contains(e.target) && !sidebarMenu.contains(e.target)) {
-                sidebarMenu.classList.remove('active');
-            }
-        });
+        setInterval(updateClock, 1000);
+        updateClock();  // Call immediately to set the clock on page load
     </script>
 
 </body>
