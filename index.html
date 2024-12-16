@@ -13,11 +13,14 @@
             border: 1px solid #ccc;
             padding: 15px;
             margin-bottom: 20px;
-            border-radius: 8px;
+            border-radius: 8px; /* Optional: rounded corners for card */
+            display: flex;
+            align-items: center;
         }
         .app-card img {
             max-width: 100px;
             height: auto;
+            border-radius: 8px; /* Border radius for the image */
             margin-right: 15px;
         }
         .app-card h3 {
@@ -40,8 +43,10 @@
             <option value="us">United States</option>
             <option value="fr">France</option>
             <option value="de">Germany</option>
-            <option value="jp">Japan</option>
-            <!-- Add more countries as needed -->
+            <option value="jp">Japanese</option>
+            <option value="vn">Vietnamese</option>
+            <option value="ru">Russians</option>
+            <option value="cn">China</option>
         </select>
     </div>
 
@@ -71,7 +76,7 @@
                 appCard.className = 'app-card';
 
                 const appImage = document.createElement('img');
-                appImage.src = app.artworkUrl100;
+                appImage.src = app.artworkUrl100; // App image URL
                 appCard.appendChild(appImage);
 
                 const appDetails = `
