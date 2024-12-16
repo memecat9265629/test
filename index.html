@@ -3,23 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Store URL Input</title>
+    <title>Fetch IPA from iTunes URL</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            margin: 20px;
         }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
         }
+
         input[type="text"] {
             width: 100%;
             padding: 10px;
@@ -27,58 +22,66 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
-        input[type="submit"] {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
+
+        button {
+            padding: 10px 15px;
             border: none;
+            background-color: #007BFF;
+            color: white;
             border-radius: 4px;
             cursor: pointer;
         }
-        input[type="submit"]:hover {
+
+        button:hover {
             background-color: #0056b3;
+        }
+
+        #result {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Enter App Store URL</h2>
-        <form id="appForm">
-            <input type="text" id="appURL" placeholder="https://apps.apple.com/country/app/name/idnumber" required>
-            <input type="submit" value="Get IPA">
-        </form>
-        <div id="result"></div>
-    </div>
+    <h1>Fetch IPA from iTunes URL</h1>
+    <form id="itunesForm">
+        <label for="itunesUrl">Enter iTunes App Store URL:</label>
+        <input type="text" id="itunesUrl" name="itunesUrl" placeholder="e.g., https://itunes.apple.com/app/id123456789">
+        <button type="submit">Get IPA</button>
+    </form>
+
+    <div id="result"></div>
 
     <script>
-        document.getElementById('appForm').addEventListener('submit', async function(event) {
+        document.getElementById('itunesForm').addEventListener('submit', function(event) {
             event.preventDefault();
-            
-            const appURL = document.getElementById('appURL').value;
-            const urlPattern = /https:\/\/apps\.apple\.com\/[a-z]{2}\/app\/[a-z0-9\-]+\/(\d+)/i;
-            const match = appURL.match(urlPattern);
-            
-            if (!match) {
-                document.getElementById('result').innerText = 'Invalid App Store URL. Please enter a valid URL.';
+            const itunesUrl = document.getElementById('itunesUrl').value;
+
+            if (!itunesUrl) {
+                document.getElementById('result').innerHTML = '<p>Please enter a valid iTunes URL.</p>';
                 return;
             }
-            
-            const appId = match[1];
-            
-            try {
-                // You need to replace this URL with a real API if available
-                const apiURL = `https://api.example.com/get_ipa?app_id=${appId}`;
-                const response = await fetch(apiURL);
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('result').innerText = `IPA Download Link: ${data.ipaUrl}`;
+
+            // Replace this URL with your backend or API URL that handles the iTunes URL and returns the IPA.
+            const apiUrl = 'https://example.com/get-ipa'; 
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ url: itunesUrl }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('result').innerHTML = `<p>Download IPA: <a href="${data.ipaUrl}" target="_blank">Click Here</a></p>`;
                 } else {
-                    document.getElementById('result').innerText = 'Failed to retrieve IPA. Please try again later.';
+                    document.getElementById('result').innerHTML = `<p>Error: ${data.error}</p>`;
                 }
-            } catch (error) {
-                document.getElementById('result').innerText = 'An error occurred while fetching IPA.';
-            }
+            })
+            .catch(error => {
+                document.getElementById('result').innerHTML = `<p>Something went wrong: ${error.message}</p>`;
+            });
         });
     </script>
 </body>
