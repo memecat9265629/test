@@ -9,25 +9,21 @@
             font-family: Arial, sans-serif;
             padding: 20px;
         }
-        .app-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-        .app-item {
-            border: 1px solid #ddd;
+        .app-card {
+            border: 1px solid #ccc;
             padding: 15px;
-            border-radius: 5px;
-            width: calc(33.333% - 40px); /* 3 columns layout */
+            margin-bottom: 20px;
+            border-radius: 8px;
         }
-        .app-item img {
-            max-width: 100%;
+        .app-card img {
+            max-width: 100px;
             height: auto;
+            margin-right: 15px;
         }
-        .app-item h3 {
-            margin: 10px 0;
+        .app-card h3 {
+            margin: 0;
         }
-        .app-item p {
+        .app-card p {
             margin: 5px 0;
         }
         .search-container {
@@ -38,40 +34,28 @@
 <body>
 
     <div class="search-container">
-        <label for="search-term">Search App:</label>
-        <input type="text" id="search-term" placeholder="Enter app name">
-        <label for="country">Select Country:</label>
-        <select id="country">
+        <input type="text" id="searchQuery" placeholder="Search for an app...">
+        <button onclick="fetchAppList()">Search</button>
+        <select id="countrySelect">
             <option value="us">United States</option>
-            <option value="gb">United Kingdom</option>
+            <option value="fr">France</option>
+            <option value="de">Germany</option>
             <option value="jp">Japan</option>
             <!-- Add more countries as needed -->
         </select>
-        <label for="language">Select Language:</label>
-        <select id="language">
-            <option value="en">English</option>
-            <option value="ja">Japanese</option>
-            <option value="fr">French</option>
-            <!-- Add more languages as needed -->
-        </select>
-        <button onclick="fetchAppData()">Search</button>
     </div>
 
-    <div class="app-list" id="app-list">
-        <!-- App items will be populated here -->
-    </div>
+    <div id="appListContainer"></div>
 
     <script>
-        async function fetchAppData() {
-            const searchTerm = document.getElementById('search-term').value.trim();
-            const country = document.getElementById('country').value;
-            const language = document.getElementById('language').value;
-            const apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&country=${country}&lang=${language}&media=software&limit=20`;
+        async function fetchAppList() {
+            const query = document.getElementById('searchQuery').value;
+            const country = document.getElementById('countrySelect').value;
+            const apiUrl = `https://itunes.apple.com/search?term=${query}&country=${country}&media=software&limit=10`;
 
             try {
                 const response = await fetch(apiUrl);
                 const data = await response.json();
-
                 displayAppList(data.results);
             } catch (error) {
                 console.error('Error fetching app data:', error);
@@ -79,28 +63,42 @@
         }
 
         function displayAppList(apps) {
-            const appListContainer = document.getElementById('app-list');
+            const appListContainer = document.getElementById('appListContainer');
             appListContainer.innerHTML = '';
 
-            if (apps.length === 0) {
-                appListContainer.innerHTML = '<p>No apps found.</p>';
-                return;
-            }
-
             apps.forEach(app => {
-                const appItem = document.createElement('div');
-                appItem.className = 'app-item';
-                appItem.innerHTML = `
-                    <img src="${app.artworkUrl100}" alt="${app.trackName}">
+                const appCard = document.createElement('div');
+                appCard.className = 'app-card';
+
+                const appImage = document.createElement('img');
+                appImage.src = app.artworkUrl100;
+                appCard.appendChild(appImage);
+
+                const appDetails = `
                     <h3>${app.trackName}</h3>
                     <p><strong>Bundle:</strong> ${app.bundleId}</p>
                     <p><strong>Version:</strong> ${app.version}</p>
-                    <p><strong>Requires iOS:</strong> ${app.minimumOsVersion}</p>
-                    <p><a href="${app.trackViewUrl}" target="_blank">View on iTunes</a></p>
+                    <p><strong>Developer:</strong> ${app.artistName}</p>
+                    <p><strong>Size:</strong> ${formatFileSize(app.fileSizeBytes)}</p>
+                    <p><strong>Rating:</strong> ${app.averageUserRating || 'N/A'} (${app.userRatingCount || '0'} ratings)</p>
+                    <p><strong>Age:</strong> ${app.contentAdvisoryRating}</p>
+                    <a href="${app.trackViewUrl}" target="_blank">View on iTunes</a>
                 `;
+                appCard.innerHTML += appDetails;
 
-                appListContainer.appendChild(appItem);
+                appListContainer.appendChild(appCard);
             });
+        }
+
+        function formatFileSize(sizeInBytes) {
+            if (!sizeInBytes) return 'N/A';
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            let i = 0;
+            while (sizeInBytes >= 1024 && i < sizes.length - 1) {
+                sizeInBytes /= 1024;
+                i++;
+            }
+            return `${sizeInBytes.toFixed(2)} ${sizes[i]}`;
         }
     </script>
 
