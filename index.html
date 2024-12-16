@@ -3,132 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>iTunes App Store API Search</title>
+    <title>iTunes App List</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
+            padding: 20px;
         }
-
-        h1 {
-            text-align: center;
-        }
-
-        .search-container {
-            margin-bottom: 20px;
-        }
-
         .app-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            display: flex;
+            flex-wrap: wrap;
             gap: 20px;
         }
-
-        .app-card {
-            border: 1px solid #ccc;
-            padding: 10px;
+        .app-item {
+            border: 1px solid #ddd;
+            padding: 15px;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: calc(33.333% - 40px); /* 3 columns layout */
         }
-
-        .app-card img {
-            width: 100%;
+        .app-item img {
+            max-width: 100%;
             height: auto;
         }
-
-        .app-card h2 {
-            font-size: 1.2em;
+        .app-item h3 {
+            margin: 10px 0;
         }
-
-        .app-card a {
-            display: block;
-            margin-top: 10px;
-            text-align: center;
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
-            border-radius: 5px;
-            text-decoration: none;
+        .app-item p {
+            margin: 5px 0;
         }
-
-        .app-card a:hover {
-            background-color: #0056b3;
+        .search-container {
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
-    <h1>iTunes App Store API Search</h1>
-
     <div class="search-container">
-        <input type="text" id="search-input" placeholder="Search for apps..." oninput="searchApps()">
-        <label for="country">Country:</label>
+        <label for="search-term">Search App:</label>
+        <input type="text" id="search-term" placeholder="Enter app name">
+        <label for="country">Select Country:</label>
         <select id="country">
             <option value="us">United States</option>
             <option value="gb">United Kingdom</option>
             <option value="jp">Japan</option>
             <!-- Add more countries as needed -->
         </select>
-        <label for="language">Language:</label>
+        <label for="language">Select Language:</label>
         <select id="language">
             <option value="en">English</option>
             <option value="ja">Japanese</option>
+            <option value="fr">French</option>
             <!-- Add more languages as needed -->
         </select>
+        <button onclick="fetchAppData()">Search</button>
     </div>
 
-    <div id="app-list" class="app-list">
-        <!-- App cards will be injected here by JavaScript -->
+    <div class="app-list" id="app-list">
+        <!-- App items will be populated here -->
     </div>
 
     <script>
-        const apiUrl = 'https://itunes.apple.com/search'; // iTunes API endpoint
-        let appList = [];
-
-        async function fetchApps(query = '', country = 'us', language = 'en') {
-            const url = `${apiUrl}?term=${query}&country=${country}&language=${language}&entity=software&limit=50`;
+        async function fetchAppData() {
+            const searchTerm = document.getElementById('search-term').value.trim();
+            const country = document.getElementById('country').value;
+            const language = document.getElementById('language').value;
+            const apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(searchTerm)}&country=${country}&lang=${language}&media=software&limit=20`;
 
             try {
-                const response = await fetch(url);
+                const response = await fetch(apiUrl);
                 const data = await response.json();
-                if (data.results && data.results.length > 0) {
-                    appList = data.results;
-                    displayApps(appList);
-                } else {
-                    document.getElementById('app-list').innerHTML = '<p>No results found.</p>';
-                }
+
+                displayAppList(data.results);
             } catch (error) {
-                console.error('Error fetching apps:', error);
+                console.error('Error fetching app data:', error);
             }
         }
 
-        function displayApps(apps) {
+        function displayAppList(apps) {
             const appListContainer = document.getElementById('app-list');
             appListContainer.innerHTML = '';
 
+            if (apps.length === 0) {
+                appListContainer.innerHTML = '<p>No apps found.</p>';
+                return;
+            }
+
             apps.forEach(app => {
-                const appCard = document.createElement('div');
-                appCard.classList.add('app-card');
-                appCard.innerHTML = `
-                    <img src="${app.artworkUrl100}" alt="${app.trackName} icon">
-                    <h2>${app.trackName}</h2>
-                    <p>Version: ${app.version}</p>
-                    <p>Requires: ${app.minimumOsVersion}</p>
-                    <a href="${app.trackViewUrl}" target="_blank">View on App Store</a>
+                const appItem = document.createElement('div');
+                appItem.className = 'app-item';
+                appItem.innerHTML = `
+                    <img src="${app.artworkUrl100}" alt="${app.trackName}">
+                    <h3>${app.trackName}</h3>
+                    <p><strong>Bundle:</strong> ${app.bundleId}</p>
+                    <p><strong>Version:</strong> ${app.version}</p>
+                    <p><strong>Requires iOS:</strong> ${app.minimumOsVersion}</p>
+                    <p><a href="${app.trackViewUrl}" target="_blank">View on iTunes</a></p>
                 `;
-                appListContainer.appendChild(appCard);
+
+                appListContainer.appendChild(appItem);
             });
         }
-
-        function searchApps() {
-            const query = document.getElementById('search-input').value;
-            const country = document.getElementById('country').value;
-            const language = document.getElementById('language').value;
-            fetchApps(query, country, language);
-        }
-
-        // Initial fetch to display some apps
-        fetchApps();
     </script>
 
 </body>
