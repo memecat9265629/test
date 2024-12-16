@@ -5,12 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>App Store Info</title>
   <style>
+    /* Basic Styles */
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
     }
 
+    /* Header Styling */
     header {
       background-color: #007aff;
       color: white;
@@ -27,8 +29,22 @@
     header form button {
       padding: 10px;
       margin: 5px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
     }
 
+    header form button {
+      background-color: #0056cc;
+      color: white;
+      cursor: pointer;
+    }
+
+    header form button:hover {
+      background-color: #003f99;
+    }
+
+    /* Main Content Styling */
     main {
       padding: 20px;
     }
@@ -41,9 +57,15 @@
 
     .appCard {
       border: 1px solid #ccc;
-      padding: 10px;
       border-radius: 8px;
+      padding: 10px;
       text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .appCard:hover {
+      transform: translateY(-5px);
     }
 
     .appCard img {
@@ -62,9 +84,40 @@
       margin: 5px 0;
     }
 
-    .appCard a {
-      text-decoration: none;
-      color: #007aff;
+    .appCard button {
+      padding: 10px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .appCard .get-ipa {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .appCard .get-ipa:hover {
+      background-color: #1c7c32;
+    }
+
+    .appCard .view-itunes {
+      background-color: #007aff;
+      color: white;
+    }
+
+    .appCard .view-itunes:hover {
+      background-color: #0056cc;
+    }
+
+    .appCard .decrypt-ipa {
+      background-color: #ff6347;
+      color: white;
+    }
+
+    .appCard .decrypt-ipa:hover {
+      background-color: #cc5140;
     }
   </style>
 </head>
@@ -77,13 +130,18 @@
         <option value="us">United States</option>
         <option value="gb">United Kingdom</option>
         <option value="jp">Japan</option>
-        <!-- Add more countries as needed -->
+        <option value="de">Germany</option>
+        <option value="kr">South Korea</option>
+        <option value="fr">France</option>
+        <option value="zh">China</option>
       </select>
       <select id="languageSelect">
         <option value="en">English</option>
         <option value="ja">Japanese</option>
         <option value="fr">French</option>
-        <!-- Add more languages as needed -->
+        <option value="de">German</option>
+        <option value="ko">Korean</option>
+        <option value="zh-Hans">Simplified Chinese</option>
       </select>
       <button type="submit">Search</button>
     </form>
@@ -106,7 +164,6 @@
 
       if (!query) return alert('Please enter a search term.');
 
-      // Fetch app data from iTunes Search API
       const apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=software&country=${country}&lang=${language}`;
 
       try {
@@ -135,11 +192,18 @@
         appCard.innerHTML = `
           <img src="${app.artworkUrl100}" alt="${app.trackName}">
           <h3>${app.trackName}</h3>
-          <p>Bundle ID: ${app.bundleId}</p>
-          <p>Price: ${app.formattedPrice || 'Free'}</p>
-          <p>Requires: ${app.minimumOsVersion}</p>
-          <a href="${app.trackViewUrl}" target="_blank">View on iTunes</a>
+          <p><strong>Bundle ID:</strong> ${app.bundleId}</p>
+          <p><strong>Price:</strong> ${app.formattedPrice || 'Free'}</p>
+          <p><strong>Requires:</strong> iOS ${app.minimumOsVersion}</p>
+          <button class="get-ipa">Get IPA</button>
+          <button class="view-itunes" onclick="window.open('${app.trackViewUrl}', '_blank')">View on iTunes</button>
+          <button class="decrypt-ipa">Decrypt IPA</button>
         `;
+
+        const decryptButton = appCard.querySelector('.decrypt-ipa');
+        decryptButton.addEventListener('click', () => {
+          alert('Decrypting IPA is not supported in this script.');
+        });
 
         appList.appendChild(appCard);
       });
