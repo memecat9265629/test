@@ -1,44 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Current Time and Font Example</title>
-    
-    <!-- Linking the font from DaFont -->
-    <link href="CuteCat.otf" rel="stylesheet" type="text/css">
-    
-    <style>
-        body {
-            font-family: 'Cute_Cat', sans-serif; /* Replace 'YourChosenFont' with the actual font name */
-            text-align: center;
-            margin-top: 50px;
-        }
-        
-        .current-time {
-            font-size: 24px;
-            color: #333;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>App Store Info</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #007aff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header form {
+      margin-top: 10px;
+    }
+
+    header form input,
+    header form select,
+    header form button {
+      padding: 10px;
+      margin: 5px;
+    }
+
+    main {
+      padding: 20px;
+    }
+
+    #appList {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+
+    .appCard {
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .appCard img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .appCard h3 {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .appCard p {
+      font-size: 14px;
+      margin: 5px 0;
+    }
+
+    .appCard a {
+      text-decoration: none;
+      color: #007aff;
+    }
+  </style>
 </head>
 <body>
-    <div class="current-time" id="time"></div>
-    
-    <script>
-        function updateTime() {
-            const timeElement = document.getElementById('time');
-            const currentTime = new Date();
-            const hours = currentTime.getHours();
-            const minutes = currentTime.getMinutes().toString().padStart(2, '0');
-            const seconds = currentTime.getSeconds().toString().padStart(2, '0');
-            const amPm = hours >= 12 ? 'PM' : 'AM';
-            
-            const formattedTime = `${hours % 12 || 12}:${minutes}:${seconds} ${amPm}`;
-            timeElement.textContent = formattedTime;
+  <header>
+    <h1>App Store Search</h1>
+    <form id="searchForm">
+      <input type="text" id="searchInput" placeholder="Search for apps..." required>
+      <select id="countrySelect">
+        <option value="us">United States</option>
+        <option value="gb">United Kingdom</option>
+        <option value="jp">Japan</option>
+        <!-- Add more countries as needed -->
+      </select>
+      <select id="languageSelect">
+        <option value="en">English</option>
+        <option value="ja">Japanese</option>
+        <option value="fr">French</option>
+        <!-- Add more languages as needed -->
+      </select>
+      <button type="submit">Search</button>
+    </form>
+  </header>
+  <main>
+    <div id="appList"></div>
+  </main>
+  <script>
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const countrySelect = document.getElementById('countrySelect');
+    const languageSelect = document.getElementById('languageSelect');
+    const appList = document.getElementById('appList');
+
+    searchForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const query = searchInput.value.trim();
+      const country = countrySelect.value;
+      const language = languageSelect.value;
+
+      if (!query) return alert('Please enter a search term.');
+
+      // Fetch app data from iTunes Search API
+      const apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=software&country=${country}&lang=${language}`;
+
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.results.length === 0) {
+          appList.innerHTML = '<p>No apps found.</p>';
+          return;
         }
-        
-        setInterval(updateTime, 1000); // Update every second
-        updateTime(); // Call initially to set the time right away
-    </script>
+
+        displayApps(data.results);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        appList.innerHTML = '<p>Failed to load apps. Please try again later.</p>';
+      }
+    });
+
+    function displayApps(apps) {
+      appList.innerHTML = '';
+
+      apps.forEach((app) => {
+        const appCard = document.createElement('div');
+        appCard.classList.add('appCard');
+
+        appCard.innerHTML = `
+          <img src="${app.artworkUrl100}" alt="${app.trackName}">
+          <h3>${app.trackName}</h3>
+          <p>Bundle ID: ${app.bundleId}</p>
+          <p>Price: ${app.formattedPrice || 'Free'}</p>
+          <p>Requires: ${app.minimumOsVersion}</p>
+          <a href="${app.trackViewUrl}" target="_blank">View on iTunes</a>
+        `;
+
+        appList.appendChild(appCard);
+      });
+    }
+  </script>
 </body>
 </html>
