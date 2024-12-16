@@ -1,172 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>App Store Info</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background-color: #007aff;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-
-    header form input,
-    header form select,
-    header form button {
-      padding: 10px;
-      margin: 5px;
-      font-size: 14px;
-    }
-
-    main {
-      padding: 20px;
-    }
-
-    #appList {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-    }
-
-    .appCard {
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .appCard img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-    }
-
-    .appCard button {
-      padding: 10px;
-      margin: 5px;
-      border: none;
-      border-radius: 5px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-
-    .appCard .get-ipa {
-      background-color: #dc3545;
-      color: white;
-    }
-
-    .appCard .get-ipa:hover {
-      background-color: #a71d2a;
-    }
-
-    .vpn-warning {
-      color: red;
-      font-weight: bold;
-      text-align: center;
-      margin-top: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Store URL Input</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>App Store Search</h1>
-    <p id="vpnWarning" class="vpn-warning"></p>
-    <form id="searchForm">
-      <input type="text" id="searchInput" placeholder="Search for apps..." required>
-      <select id="countrySelect">
-        <option value="us">United States</option>
-        <option value="vn">Vietnam</option>
-        <!-- Add other countries as needed -->
-      </select>
-      <button type="submit">Search</button>
-    </form>
-  </header>
-  <main>
-    <div id="appList"></div>
-  </main>
-  <script>
-    const searchForm = document.getElementById('searchForm');
-    const searchInput = document.getElementById('searchInput');
-    const countrySelect = document.getElementById('countrySelect');
-    const appList = document.getElementById('appList');
-    const vpnWarning = document.getElementById('vpnWarning');
+    <div class="container">
+        <h2>Enter App Store URL</h2>
+        <form id="appForm">
+            <input type="text" id="appURL" placeholder="https://apps.apple.com/country/app/name/idnumber" required>
+            <input type="submit" value="Get IPA">
+        </form>
+        <div id="result"></div>
+    </div>
 
-    // VPN Detection Function
-    async function detectVPN() {
-      try {
-        const response = await fetch('https://ipinfo.io/json');
-        const data = await response.json();
-
-        // Check if the user is using Cloudflare Warp or another VPN
-        if (data.hostname && data.hostname.includes("warp")) {
-          vpnWarning.textContent = "VPN detected (1.1.1.1 or others). Please turn off VPN to access this page.";
-        } else {
-          vpnWarning.textContent = "";
-        }
-      } catch (error) {
-        console.error("Could not detect VPN:", error);
-      }
-    }
-
-    // Run VPN Detection on Load
-    detectVPN();
-
-    searchForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const query = searchInput.value.trim();
-      const country = countrySelect.value;
-
-      if (!query) return alert("Please enter a search term.");
-
-      const apiUrl = `https://itunes.apple.com/search?term=${encodeURIComponent(query)}&entity=software&country=${country}`;
-
-      try {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
-
-        if (data.results.length === 0) {
-          appList.innerHTML = "<p>No apps found.</p>";
-          return;
-        }
-
-        displayApps(data.results);
-      } catch (error) {
-        console.error("Error fetching app data:", error);
-        appList.innerHTML = "<p>Failed to load apps. Please try again later.</p>";
-      }
-    });
-
-    function displayApps(apps) {
-      appList.innerHTML = "";
-
-      apps.forEach((app) => {
-        const appCard = document.createElement("div");
-        appCard.classList.add("appCard");
-
-        appCard.innerHTML = `
-          <img src="${app.artworkUrl100}" alt="${app.trackName}">
-          <h3>${app.trackName}</h3>
-          <p><strong>Price:</strong> ${app.formattedPrice || "Free"}</p>
-          <button class="get-ipa">Get IPA</button>
-        `;
-
-        const getIPAButton = appCard.querySelector(".get-ipa");
-        getIPAButton.addEventListener("click", () => {
-          alert("GET IPA feature is disabled.");
+    <script>
+        document.getElementById('appForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            const appURL = document.getElementById('appURL').value;
+            const urlPattern = /https:\/\/apps\.apple\.com\/[a-z]{2}\/app\/[a-z0-9\-]+\/(\d+)/i;
+            const match = appURL.match(urlPattern);
+            
+            if (!match) {
+                document.getElementById('result').innerText = 'Invalid App Store URL. Please enter a valid URL.';
+                return;
+            }
+            
+            const appId = match[1];
+            
+            try {
+                // You need to replace this URL with a real API if available
+                const apiURL = `https://api.example.com/get_ipa?app_id=${appId}`;
+                const response = await fetch(apiURL);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('result').innerText = `IPA Download Link: ${data.ipaUrl}`;
+                } else {
+                    document.getElementById('result').innerText = 'Failed to retrieve IPA. Please try again later.';
+                }
+            } catch (error) {
+                document.getElementById('result').innerText = 'An error occurred while fetching IPA.';
+            }
         });
-
-        appList.appendChild(appCard);
-      });
-    }
-  </script>
+    </script>
 </body>
 </html>
