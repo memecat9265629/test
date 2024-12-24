@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Countdown</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 20px;
+        }
+        .countdown {
+            margin: 20px auto;
+            padding: 20px;
+            border: 2px solid #ffffff;
+            border-radius: 10px;
+            width: 300px;
+        }
+        .countdown-title {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .timer {
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .event-list {
+            margin: 30px 0;
+        }
+        .event-list button {
+            padding: 10px 20px;
+            margin: 5px;
+            background-color: #0078ff;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        .event-list button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <h1>Event Countdown System</h1>
+    <div class="countdown">
+        <div class="countdown-title" id="event-title">Select an Event</div>
+        <div class="timer" id="timer">??:??:??</div>
+    </div>
+    <div class="event-list">
+        <button onclick="startCountdown('Merry Christmas', '2024-12-25T00:00:00')">Merry Christmas</button>
+        <button onclick="startCountdown('Halloween', '2024-10-31T00:00:00')">Halloween</button>
+        <button onclick="startCountdown('Happy New Year', '2025-01-01T00:00:00')">Happy New Year</button>
+        <button onclick="startCountdown('Blood Moon', '2024-07-27T00:00:00')">Blood Moon</button>
+        <button onclick="startCountdown('Solar Eclipse', '2024-04-08T00:00:00')">Solar Eclipse</button>
+    </div>
+    <script>
+        let countdownInterval;
+
+        function startCountdown(eventTitle, eventDate) {
+            clearInterval(countdownInterval);
+            document.getElementById('event-title').textContent = eventTitle;
+
+            function updateCountdown() {
+                const now = new Date();
+                const targetDate = new Date(eventDate);
+                const diff = targetDate - now;
+
+                if (diff <= 0) {
+                    clearInterval(countdownInterval);
+                    document.getElementById('timer').textContent = "00:00:00";
+                    alert(`${eventTitle} has arrived!`);
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('timer').textContent =
+                    `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            }
+
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+    </script>
+</body>
+</html>
