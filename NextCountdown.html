@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Countdown</title>
+    <title>Event Countdown System</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,6 +15,38 @@
         }
         h1 {
             margin-top: 20px;
+        }
+        .calendar-container {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 10px;
+            width: 300px;
+            margin: auto;
+        }
+        label {
+            font-size: 1.2em;
+        }
+        input[type="date"] {
+            margin: 10px 0;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #0078ff;
+            border-radius: 5px;
+            background-color: #252525;
+            color: white;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #0078ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005bb5;
         }
         .countdown {
             margin: 20px auto;
@@ -31,29 +63,50 @@
             font-size: 2em;
             font-weight: bold;
         }
-        .event-list {
-            margin: 30px 0;
-        }
-        .event-list button {
-            padding: 10px 20px;
-            margin: 5px;
-            background-color: #0078ff;
-            border: none;
-            border-radius: 5px;
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: -300px;
+            padding: 20px;
+            background-color: #28a745;
             color: white;
-            cursor: pointer;
+            border-radius: 10px;
+            font-size: 1em;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            animation: slideIn 0.5s forwards, fadeOut 3s 2.5s forwards;
         }
-        .event-list button:hover {
-            background-color: #005bb5;
+        @keyframes slideIn {
+            from {
+                right: -300px;
+            }
+            to {
+                right: 20px;
+            }
+        }
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                right: -300px;
+            }
         }
     </style>
 </head>
 <body>
     <h1>Event Countdown System</h1>
+
+    <div class="calendar-container">
+        <form id="calendarForm">
+            <label for="eventDate">Select a Date:</label><br>
+            <input type="date" id="eventDate" name="eventDate" min="2024-01-01" max="2024-12-31" required><br>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
     <div class="countdown">
         <div class="countdown-title" id="event-title">Select an Event</div>
         <div class="timer" id="timer">??:??:??</div>
     </div>
+
     <div class="event-list">
         <button onclick="startCountdown('Merry Christmas', '2024-12-25T00:00:00')">Merry Christmas</button>
         <button onclick="startCountdown('Halloween', '2024-10-31T00:00:00')">Halloween</button>
@@ -61,9 +114,13 @@
         <button onclick="startCountdown('Blood Moon', '2024-07-27T00:00:00')">Blood Moon</button>
         <button onclick="startCountdown('Solar Eclipse', '2024-04-08T00:00:00')">Solar Eclipse</button>
     </div>
+
+    <div id="notificationArea"></div>
+
     <script>
         let countdownInterval;
 
+        // Function to start countdown for predefined or custom events
         function startCountdown(eventTitle, eventDate) {
             clearInterval(countdownInterval);
             document.getElementById('event-title').textContent = eventTitle;
@@ -76,7 +133,7 @@
                 if (diff <= 0) {
                     clearInterval(countdownInterval);
                     document.getElementById('timer').textContent = "00:00:00";
-                    alert(`${eventTitle} has arrived!`);
+                    showNotification(`${eventTitle} has arrived!`, 'success');
                     return;
                 }
 
@@ -91,6 +148,39 @@
 
             updateCountdown();
             countdownInterval = setInterval(updateCountdown, 1000);
+        }
+
+        // Form handling for custom date submission
+        const form = document.getElementById('calendarForm');
+        form.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent form submission
+            const selectedDate = document.getElementById('eventDate').value;
+
+            if (!selectedDate) {
+                showNotification('Please select a valid date!', 'error');
+                return;
+            }
+
+            const formattedDate = new Date(selectedDate).toDateString();
+            startCountdown(`Custom Event (${formattedDate})`, selectedDate + 'T00:00:00');
+            showNotification(`Countdown started for ${formattedDate}`, 'success');
+        });
+
+        // Notification system
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+
+            if (type === 'error') {
+                notification.style.backgroundColor = '#dc3545';
+            }
+
+            document.getElementById('notificationArea').appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
         }
     </script>
 </body>
