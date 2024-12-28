@@ -27,7 +27,7 @@
         label {
             font-size: 1.2em;
         }
-        input[type="date"] {
+        input[type="datetime-local"] {
             margin: 10px 0;
             padding: 10px;
             font-size: 1em;
@@ -103,9 +103,17 @@
         <button onclick="startCountdown('Merry Christmas', '2025-12-25T00:00:00')">Merry Christmas</button>
         <button onclick="startCountdown('Halloween', '2025-10-31T00:00:00')">Halloween</button>
         <button onclick="startCountdown('Happy New Year 2025', '2025-01-01T00:00:00')">Happy New Year 2025</button>
-        <button onclick="startCountdown('Blood Moon', '2025-14-3T00:00:00')">Blood Moon</button>
+        <button onclick="startCountdown('Blood Moon', '2025-03-14T00:00:00')">Blood Moon</button>
         <button onclick="startCountdown('Solar Eclipse', '2024-04-08T00:00:00')">Solar Eclipse</button>
         <button onclick="startCountdown('Happy New Year 2026', '2026-01-01T00:00:00')">Happy New Year 2026</button>
+    </div>
+
+    <div class="calendar-container">
+        <form id="calendarForm">
+            <label for="eventDateTime">Select Custom Event Date & Time:</label><br>
+            <input type="datetime-local" id="eventDateTime">
+            <button type="submit">Start Countdown</button>
+        </form>
     </div>
 
     <div id="notificationArea"></div>
@@ -113,7 +121,6 @@
     <script>
         let countdownInterval;
 
-        // Function to start countdown for predefined or custom events
         function startCountdown(eventTitle, eventDate) {
             clearInterval(countdownInterval);
             document.getElementById('event-title').textContent = eventTitle;
@@ -143,23 +150,20 @@
             countdownInterval = setInterval(updateCountdown, 1000);
         }
 
-        // Form handling for custom date submission
-        const form = document.getElementById('calendarForm');
-        form.addEventListener('submit', (event) => {
-            event.preventDefault(); // Prevent form submission
-            const selectedDate = document.getElementById('eventDate').value;
+        document.getElementById('calendarForm').addEventListener('submit', (event) => {
+            event.preventDefault();
+            const selectedDateTime = document.getElementById('eventDateTime').value;
 
-            if (!selectedDate) {
-                showNotification('Please select a valid date!', 'error');
+            if (!selectedDateTime) {
+                showNotification('Please select a valid date and time!', 'error');
                 return;
             }
 
-            const formattedDate = new Date(selectedDate).toDateString();
-            startCountdown(`Custom Event (${formattedDate})`, selectedDate + 'T00:00:00');
+            const formattedDate = new Date(selectedDateTime).toLocaleString();
+            startCountdown(`Custom Event (${formattedDate})`, selectedDateTime);
             showNotification(`Countdown started for ${formattedDate}`, 'success');
         });
 
-        // Notification system
         function showNotification(message, type) {
             const notification = document.createElement('div');
             notification.className = 'notification';
