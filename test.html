@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APK and File Downloader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    input, button {
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #007BFF;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+    }
+    .loading {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>APK Downloader</h1>
+    <input type="url" id="apkUrl" placeholder="Enter APK URL" required>
+    <input type="file" id="apkFile" accept=".apk">
+    <button id="downloadBtn" onclick="downloadFile()">Download APK</button>
+    <div id="loadingText" class="loading"></div>
+  </div>
+
+  <script>
+    function downloadFile() {
+      const apkUrl = document.getElementById("apkUrl").value;
+      const apkFile = document.getElementById("apkFile").files[0];
+      const loadingText = document.getElementById("loadingText");
+
+      if (!apkUrl && !apkFile) {
+        alert("Please provide a URL or select a file.");
+        return;
+      }
+
+      loadingText.textContent = "Decrypting and Loading...";
+
+      // Simulate decryption/loading
+      setTimeout(() => {
+        if (apkUrl) {
+          const a = document.createElement("a");
+          a.href = apkUrl;
+          a.download = "Download-Test-File.apk";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        } else if (apkFile) {
+          const fileReader = new FileReader();
+          fileReader.onload = function (event) {
+            const a = document.createElement("a");
+            a.href = event.target.result;
+            a.download = apkFile.name;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          };
+          fileReader.readAsDataURL(apkFile);
+        }
+        loadingText.textContent = "File ready for download.";
+      }, 2000); // Simulate delay
+    }
+  </script>
+</body>
+</html>
